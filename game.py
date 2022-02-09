@@ -24,12 +24,16 @@ FPS = 30
 TITLE_FONT = pygame.font.Font('freesansbold.ttf', 38)
 
 ### Drawing window ###
-def draw_window(input, row, arr, colors):
+def draw_window(input, row, arr, colors, lose, answer):
     WINDOW.fill(BACKGROUND_COLOR)
     draw_screen(colors, row)
     
     drawWords(arr) 
     drawInput(input, row)
+
+    if(lose):
+        drawAnswer(answer)
+
     pygame.display.update()
 
 ### Drawing screen ###
@@ -125,6 +129,11 @@ def drawWords(arr):
             else:
                 letter = TITLE_FONT.render(arr[i][j], True, (255, 255, 255))
             WINDOW.blit(letter, (x, y))
+
+### If player loses, this shows the answer ###
+def drawAnswer(answer):
+    result = TITLE_FONT.render(answer.upper(), True, (255, 255, 255))
+    WINDOW.blit(result, (170, 700))
     
     
 ##############################
@@ -219,13 +228,13 @@ def checkWin(row, colors):
 ######################
 ### Main game loop ###
 ######################
-run = True
+
 def loop():
 
     ### Set up the game
     wordlist = generateWordList()
     answer = pickWord(wordlist)
-    print(wordlist)
+    run = True
 
     ### Setting Clock ###
     clock = pygame.time.Clock()
@@ -236,21 +245,26 @@ def loop():
     words = [['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*']]
     colors = [['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b']]
     win = False
+    lose = False
     
-    while True:
+    while run:
         clock.tick(FPS)
 
         ### Quit program ###
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             run = False
-            break
+            exit()
+
+        ### New game ###
+        if keys[pygame.K_TAB]:
+            print("New game")
+            run = False
             
         ### Key input ###
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-                break
+                exit()
 
             
 
@@ -273,19 +287,15 @@ def loop():
                             colors = showResults(input, answer, colors, row)
 
                             win = checkWin(row, colors)
-                            if(win):
-                                print(row)
+                            if(win):             
                                 row = 1000
-                                print("Winner!")
-                                print("The word was: ", answer)
                             
                             input = ""
                             row += 1
 
                             if(row == 6 and win == False):
-                                print("You lose!")
-                                print("The word was: ", answer)
-
+                                lose = True
+                               
                 else:
                     if len(input) < 5 and row<6:
                         l = event.unicode
@@ -296,11 +306,11 @@ def loop():
         
 
         ### Draw display ###
-        draw_window(input, row, words, colors)
+        draw_window(input, row, words, colors, lose, answer)
 
 def main():
-    loop()
-    pygame.quit()
+    while True:
+        loop()
 
 if __name__ == "__main__":
     main()
