@@ -1,6 +1,4 @@
 ### TODO
-# 1. github
-# 3. find and implement word dictionary - US Scrabble dictionary
 # 4. once game is ready to go, figure out the AI part
 
 ### Import statements ###
@@ -8,6 +6,7 @@ from curses import termattrs
 import pygame
 from english_words import english_words_lower_alpha_set
 import random
+
 pygame.font.init()
 
 #################################
@@ -135,9 +134,13 @@ def drawWords(arr):
 ### Pick word that Wordle AI will try and find ###
 def generateWordList():
     wordlist = []
-    for word in english_words_lower_alpha_set:
-        if(len(word) == 5):
-            wordlist.append(word)
+    biglist = []
+    with open('words_alpha.txt') as file:
+        biglist = file.readlines()
+            
+    for word in biglist:
+        if len(word) == 6:
+            wordlist.append(word[:5])
 
     return wordlist
 
@@ -222,6 +225,7 @@ def loop():
     ### Set up the game
     wordlist = generateWordList()
     answer = pickWord(wordlist)
+    print(wordlist)
 
     ### Setting Clock ###
     clock = pygame.time.Clock()
