@@ -3,11 +3,20 @@
 
 ### Import statements ###
 from curses import termattrs
+from dataclasses import asdict
 import pygame
 from english_words import english_words_lower_alpha_set
 import random
 
 pygame.font.init()
+
+########################
+### Global Variables ###
+########################
+
+letterlist = []
+for i in range(26):
+    letterlist.append('b')
 
 #################################
 ### Display-related Functions ###
@@ -24,7 +33,7 @@ FPS = 30
 TITLE_FONT = pygame.font.Font('freesansbold.ttf', 38)
 
 ### Drawing window ###
-def draw_window(input, row, arr, colors, lose, answer):
+def draw_window(input, row, arr, colors, lose, answer, win):
     WINDOW.fill(BACKGROUND_COLOR)
     draw_screen(colors, row)
     
@@ -33,6 +42,8 @@ def draw_window(input, row, arr, colors, lose, answer):
 
     if(lose):
         drawAnswer(answer)
+    if(win):
+        drawNice()
 
     pygame.display.update()
 
@@ -134,6 +145,10 @@ def drawWords(arr):
 def drawAnswer(answer):
     result = TITLE_FONT.render(answer.upper(), True, (255, 255, 255))
     WINDOW.blit(result, (170, 700))
+
+def drawNice():
+    nice = TITLE_FONT.render("Nice!", True, (255, 255, 255))
+    WINDOW.blit(nice, (190, 700))
     
     
 ##############################
@@ -180,6 +195,11 @@ def showResults(input, answer, colors, row):
                     #green
                     colors[row][a] = 'g'
                     answer = answer[:c] + '&' + answer[c+1:]
+
+                    #store input[c:c+1] as a green letter
+                    storeResults(input[c:c+1], 'g')
+                    print("letter: ", input[c:c+1], " color: g")
+
     #print("Input: ", input)
     #print("Answer: ", answer)
     #print(colors)
@@ -195,6 +215,10 @@ def showResults(input, answer, colors, row):
                 if(colors[row][c] != 'g'):
                     colors[row][c] = 'y'
                     answer = answer[:a] + '%' + answer[a+1:]
+
+                    #store input[c:c+1] as a yellow letter
+                    storeResults(input[c:c+1], 'y')
+                    print("letter: ", input[c:c+1], " color: y")
     #print("Input: ", input)
     #print("Answer: ", answer)
     #print(colors)
@@ -205,6 +229,9 @@ def showResults(input, answer, colors, row):
         if colors[row][i] != 'g' and colors[row][i] != 'y':
             colors[row][i] = 'w'
             answer = answer[:i] + '@' + answer[i+1:]
+
+            #store input[c:c+1] as a gray letter
+            storeResults(input[c:c+1], 'w')
 
     #print("Input: ", input)
     #print("Answer: ", answer)
@@ -222,6 +249,18 @@ def checkWin(row, colors):
         if colors[row][i] != 'g':
             return False
     return True
+
+### store the results for each letter ###
+def storeResults(letter, color):
+
+    #a = 97, z = 122
+    #corresponding index in letter list = val-97
+
+    index = ord(letter) - 65
+    global letterlist
+    print(index)
+    print(letter)
+    letterlist[index] = color
             
 
 
@@ -235,6 +274,7 @@ def loop():
     wordlist = generateWordList()
     answer = pickWord(wordlist)
     run = True
+    print(answer)
 
     ### Setting Clock ###
     clock = pygame.time.Clock()
@@ -246,6 +286,8 @@ def loop():
     colors = [['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b']]
     win = False
     lose = False
+    global letterlist
+    letterlist = []
     
     while run:
         clock.tick(FPS)
@@ -258,7 +300,7 @@ def loop():
 
         ### New game ###
         if keys[pygame.K_TAB]:
-            print("New game")
+            #print("New game")
             run = False
             
         ### Key input ###
@@ -295,6 +337,10 @@ def loop():
 
                             if(row == 6 and win == False):
                                 lose = True
+
+                        #testing
+                        #print results list
+                        print(letterlist)
                                
                 else:
                     if len(input) < 5 and row<6:
@@ -306,7 +352,7 @@ def loop():
         
 
         ### Draw display ###
-        draw_window(input, row, words, colors, lose, answer)
+        draw_window(input, row, words, colors, lose, answer, win)
 
 def main():
     while True:
