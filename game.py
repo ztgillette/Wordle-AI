@@ -7,6 +7,7 @@ from dataclasses import asdict
 import pygame
 from english_words import english_words_lower_alpha_set
 import random
+from solve import *
 
 pygame.font.init()
 
@@ -198,7 +199,7 @@ def showResults(input, answer, colors, row):
 
                     #store input[c:c+1] as a green letter
                     storeResults(input[c:c+1], 'g')
-                    print("letter: ", input[c:c+1], " color: g")
+                    #print("letter: ", input[c:c+1], " color: g")
 
     #print("Input: ", input)
     #print("Answer: ", answer)
@@ -218,7 +219,7 @@ def showResults(input, answer, colors, row):
 
                     #store input[c:c+1] as a yellow letter
                     storeResults(input[c:c+1], 'y')
-                    print("letter: ", input[c:c+1], " color: y")
+                    #print("letter: ", input[c:c+1], " color: y")
     #print("Input: ", input)
     #print("Answer: ", answer)
     #print(colors)
@@ -231,7 +232,8 @@ def showResults(input, answer, colors, row):
             answer = answer[:i] + '@' + answer[i+1:]
 
             #store input[c:c+1] as a gray letter
-            storeResults(input[c:c+1], 'w')
+            storeResults(input[i:i+1], 'w')
+            #print("letter: ", input[i:i+1], " color: w")
 
     #print("Input: ", input)
     #print("Answer: ", answer)
@@ -258,9 +260,12 @@ def storeResults(letter, color):
 
     index = ord(letter) - 65
     global letterlist
-    print(index)
-    print(letter)
     letterlist[index] = color
+
+### returns results array so it can be used in solve.py
+def returnResults():
+    global letterlist
+    return letterlist
             
 
 
@@ -288,6 +293,8 @@ def loop():
     lose = False
     global letterlist
     letterlist = []
+    for i in range(26):
+        letterlist.append('b')
     
     while run:
         clock.tick(FPS)
@@ -340,6 +347,7 @@ def loop():
 
                         #testing
                         #print results list
+                        print("Current letterlist")
                         print(letterlist)
                                
                 else:
