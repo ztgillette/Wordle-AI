@@ -28,15 +28,28 @@ HEIGHT = 800
 WIDTH = 500
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Wordle AI")
+FPS = 30
+
+### color constants ###
 BACKGROUND_COLOR = (18,18,19)
 BOX_COLOR = (60, 60, 60)
-FPS = 30
+GREEN = (82, 140, 77)
+YELLOW = (181, 158, 59)
+GRAY = (58, 58, 59)
+WHITE = (255, 255, 255)
+
+### font constants ###
 TITLE_FONT = pygame.font.Font('freesansbold.ttf', 38)
+SMALL_FONT = pygame.font.Font('freesansbold.ttf', 24)
+SMALLEST_FONT = pygame.font.Font('freesansbold.ttf', 18)
+
 
 ### Drawing window ###
 def draw_window(input, row, arr, colors, lose, answer, win):
     WINDOW.fill(BACKGROUND_COLOR)
     draw_screen(colors, row)
+
+    drawInstructions()
     
     drawWords(arr) 
     drawInput(input, row)
@@ -45,6 +58,9 @@ def draw_window(input, row, arr, colors, lose, answer, win):
         drawAnswer(answer)
     if(win):
         drawNice()
+
+    if(not lose and not win):
+        drawLetterResults()
 
     pygame.display.update()
 
@@ -56,7 +72,7 @@ def draw_screen(colors, row):
 
 ### Drawing title ###
 def draw_title():
-    title = TITLE_FONT.render("WORDLE AI", True, (255, 255, 255))
+    title = TITLE_FONT.render("WORDLE AI", True, WHITE)
     WINDOW.blit(title, (135, 30))
 
 def draw_line():
@@ -72,13 +88,13 @@ def draw_box_grid(colors, row):
             #draw colored boxes
             #print green
             if colors[i][j] == 'g':
-                draw_box(86 + x, 170 + y, (82, 140, 77))
+                draw_box(86 + x, 170 + y, GREEN)
             #print yellow
             elif colors[i][j] == 'y':
-                draw_box(86 + x, 170 + y, (181, 158, 59))
+                draw_box(86 + x, 170 + y, YELLOW)
             #print gray
             elif colors[i][j] == 'w':
-                draw_box(86 + x, 170 + y, (58, 58, 59))
+                draw_box(86 + x, 170 + y, GRAY)
             else:
                 draw_box(86 + x, 170 + y, (BACKGROUND_COLOR))
             x += 66
@@ -112,19 +128,19 @@ def drawInput(input, row):
     c4 = input[3:4]
     c5 = input[4:]
 
-    c1display = TITLE_FONT.render(c1, True, (255, 255, 255))
+    c1display = TITLE_FONT.render(c1, True, WHITE)
     WINDOW.blit(c1display, (104, 183 + yadded))
 
-    c2display = TITLE_FONT.render(c2, True, (255, 255, 255))
+    c2display = TITLE_FONT.render(c2, True, WHITE)
     WINDOW.blit(c2display, (170, 183 + yadded))
 
-    c3display = TITLE_FONT.render(c3, True, (255, 255, 255))
+    c3display = TITLE_FONT.render(c3, True, WHITE)
     WINDOW.blit(c3display, (236, 183 + yadded))
 
-    c4display = TITLE_FONT.render(c4, True, (255, 255, 255))
+    c4display = TITLE_FONT.render(c4, True, WHITE)
     WINDOW.blit(c4display, (302, 183 + yadded))
 
-    c5display = TITLE_FONT.render(c5, True, (255, 255, 255))
+    c5display = TITLE_FONT.render(c5, True, WHITE)
     WINDOW.blit(c5display, (368, 183 + yadded))
 
 ### Draw words that have already been entered on to the screen ###
@@ -137,20 +153,86 @@ def drawWords(arr):
             y = 183 + ((i) * 66)
 
             if arr[i][j] == '*':
-                letter = TITLE_FONT.render(' ', True, (255, 255, 255))
+                letter = TITLE_FONT.render(' ', True, WHITE)
             else:
-                letter = TITLE_FONT.render(arr[i][j], True, (255, 255, 255))
+                letter = TITLE_FONT.render(arr[i][j], True, WHITE)
             WINDOW.blit(letter, (x, y))
 
 ### If player loses, this shows the answer ###
 def drawAnswer(answer):
-    result = TITLE_FONT.render(answer.upper(), True, (255, 255, 255))
+    result = TITLE_FONT.render(answer.upper(), True, WHITE)
     WINDOW.blit(result, (170, 700))
 
 def drawNice():
-    nice = TITLE_FONT.render("Nice!", True, (255, 255, 255))
+    nice = TITLE_FONT.render("Nice!", True, WHITE)
     WINDOW.blit(nice, (190, 700))
-    
+
+def drawLetterResults():
+    global letterlist
+    green = []
+    yellow = []
+    gray = []
+    black = []
+
+    for i in range(26):
+        if letterlist[i] == 'g':
+            green.append(chr(65+i))
+        elif letterlist[i] == 'y':
+            yellow.append(chr(65+i))
+        elif letterlist[i] == 'w':
+            gray.append(chr(65+i))
+        else:
+            black.append(chr(65+i))
+
+    ### convert arrays of letters into a string to display
+    gr = "Green: "
+    for i in range(len(green)):
+        gr += green[i] + ", "
+
+    ye = "Yellow: "
+    for i in range(len(yellow)):
+        ye += yellow[i] + ", "
+
+    gra = "Gray: "
+    for i in range(len(gray)):
+        gra += gray[i] + ", "
+
+    bl = "Unknown: "
+    for i in range(len(black)):
+        bl += black[i] + ", "
+
+    ### cutting off extra commas ###
+    if len(gr) >= 2:
+        gr = gr[:len(gr)-2]
+    if len(ye) >= 2:
+        ye = ye[:len(ye)-2]
+    if len(gra) >= 2:
+        gra = gra[:len(gra)-2]
+    if len(bl) >= 2:
+        bl = bl[:len(bl)-2]
+
+    g = SMALL_FONT.render(gr, True, GREEN)
+    y = SMALL_FONT.render(ye, True, YELLOW)
+    w = SMALL_FONT.render(gra, True, GRAY)
+    ### making bl have an extra line if need be
+    if len(bl) >= 41:
+        b = SMALL_FONT.render(bl[:41], True, WHITE)
+        b2 = SMALL_FONT.render(bl[42:], True, WHITE)
+        WINDOW.blit(b2, (20, 760))
+    else:
+        b = SMALL_FONT.render(bl, True, WHITE)
+
+    WINDOW.blit(g, (20, 600))
+    WINDOW.blit(y, (20, 640))
+    WINDOW.blit(w, (20, 680))
+    WINDOW.blit(b, (20, 720))
+
+def drawInstructions():
+    s = "Press esc to quit program, press tab for new game."
+    sout = SMALLEST_FONT.render(s, True, WHITE)
+    WINDOW.blit(sout, (25, 100))
+
+
     
 ##############################
 ### Game-related Functions ###
@@ -186,7 +268,6 @@ def showResults(input, answer, colors, row):
     answer = answer.upper()
 
     #First, get all the greens
-    #print("CHECKING GREENS")
     for c in range(5):
         for a in range(5):
         
@@ -199,14 +280,8 @@ def showResults(input, answer, colors, row):
 
                     #store input[c:c+1] as a green letter
                     storeResults(input[c:c+1], 'g')
-                    #print("letter: ", input[c:c+1], " color: g")
-
-    #print("Input: ", input)
-    #print("Answer: ", answer)
-    #print(colors)
 
     #Next, get all the yellow
-    #print("CHECKING YELLOWS")
     for c in range(5):
         for a in range(5):
         
@@ -219,13 +294,8 @@ def showResults(input, answer, colors, row):
 
                     #store input[c:c+1] as a yellow letter
                     storeResults(input[c:c+1], 'y')
-                    #print("letter: ", input[c:c+1], " color: y")
-    #print("Input: ", input)
-    #print("Answer: ", answer)
-    #print(colors)
-    
+
     #Make everything else gray
-    #print("EVERYTHING ELSE GRAY")
     for i in range(5):
         if colors[row][i] != 'g' and colors[row][i] != 'y':
             colors[row][i] = 'w'
@@ -233,15 +303,6 @@ def showResults(input, answer, colors, row):
 
             #store input[c:c+1] as a gray letter
             storeResults(input[i:i+1], 'w')
-            #print("letter: ", input[i:i+1], " color: w")
-
-    #print("Input: ", input)
-    #print("Answer: ", answer)
-    #print(colors)
-    
-    #NOTE:
-    #if a letter is in the right spot and there are no more of them, 
-    #it should not be yellow in other spots
     
     return colors
 
@@ -255,7 +316,7 @@ def checkWin(row, colors):
 ### store the results for each letter ###
 def storeResults(letter, color):
 
-    #a = 97, z = 122
+    #A = 65
     #corresponding index in letter list = val-97
 
     index = ord(letter) - 65
@@ -279,7 +340,6 @@ def loop():
     wordlist = generateWordList()
     answer = pickWord(wordlist)
     run = True
-    print(answer)
 
     ### Setting Clock ###
     clock = pygame.time.Clock()
@@ -315,8 +375,6 @@ def loop():
             if event.type == pygame.QUIT:
                 exit()
 
-            
-
             ### Text input ###
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
@@ -344,11 +402,6 @@ def loop():
 
                             if(row == 6 and win == False):
                                 lose = True
-
-                        #testing
-                        #print results list
-                        print("Current letterlist")
-                        print(letterlist)
                                
                 else:
                     if len(input) < 5 and row<6:
@@ -356,9 +409,6 @@ def loop():
                         if l.isalpha():
                             input += l.upper()
         
-
-        
-
         ### Draw display ###
         draw_window(input, row, words, colors, lose, answer, win)
 
