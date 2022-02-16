@@ -241,19 +241,28 @@ def drawInstructions():
 ### Pick word that Wordle AI will try and find ###
 def generateWordList():
     wordlist = []
-    biglist = []
-    with open('words_alpha.txt') as file:
-        biglist = file.readlines()
-            
-    for word in biglist:
-        if len(word) == 6:
-            wordlist.append(word[:5])
+    with open('wordle-allowed-guesses.txt') as file:
+        with open('wordle-answers-alphabetical.txt') as file2:
+            wordlist = file.readlines() + file2.readlines()
+
+    for i in range(len(wordlist)):
+        wordlist[i] = wordlist[i][:5]
+        wordlist[i] = wordlist[i].upper()
 
     return wordlist
 
-def pickWord(wordlist):
+def pickWord():
 
-    word = random.choice(wordlist)
+    answerlist = []
+    with open('wordle-answers-alphabetical.txt') as file:
+        answerlist = file.readlines()
+
+    word = random.choice(answerlist)
+
+    word = word[:5]
+    word = word.upper()
+    print("Answer is:", word)
+
     return word
 
 ### Check if input word is a valid word
@@ -338,7 +347,8 @@ def loop():
 
     ### Set up the game
     wordlist = generateWordList()
-    answer = pickWord(wordlist)
+    answer = pickWord()
+    
     run = True
 
     ### Setting Clock ###
@@ -380,7 +390,7 @@ def loop():
                 if event.key == pygame.K_BACKSPACE:
                     input = input[:-1]
                 elif event.key == pygame.K_RETURN:
-                    if (len(input) == 5 or row == 5) and checkWord(input.lower(), wordlist):
+                    if (len(input) == 5 or row == 5) and checkWord(input, wordlist):
                         ### "lock in" input as final answer ###
                         
                         if(row <= 5):
