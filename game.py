@@ -19,6 +19,8 @@ letterlist = []
 for i in range(26):
     letterlist.append('b')
 
+words = []
+
 #################################
 ### Display-related Functions ###
 #################################
@@ -261,7 +263,6 @@ def pickWord():
 
     word = word[:5]
     word = word.upper()
-    print("Answer is:", word)
 
     return word
 
@@ -357,6 +358,7 @@ def loop():
     ### Variables ###
     input = ""
     row = 0
+    global words
     words = [['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*']]
     colors = [['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b']]
     win = False
@@ -412,6 +414,8 @@ def loop():
 
                             if(row == 6 and win == False):
                                 lose = True
+
+                            print(words)
                                
                 else:
                     if len(input) < 5 and row<6:

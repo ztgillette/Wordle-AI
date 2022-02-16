@@ -1,19 +1,29 @@
 from game import *
 
+answerlist = []
+with open('wordle-answers-alphabetical.txt') as file:
+    answerlist = file.readlines()
+
+for i in range(len(answerlist)):
+    answerlist[i] = answerlist[i][:5]
+    answerlist[i] = answerlist[i].upper()
+
 def possibleWords(letterlist, words):
+    global answerlist
 
     #using qualifications from letter list,
     #determine all the possible words to choose from
     
     remainingWords = []
 
-    for word in words:
+    for word in answerlist:
         
         #first, add all the words with correct letter placememt
         #(i.e. green letters in correct spots)
         for i in letterlist:
-            #f letterlist[i] == 'g':
-            #just realized that we didn't include placement info...
+            if letterlist[i] == 'g':
+                print()
+            
 
         #last, get add remaining words 
         #(words that don't have any 'w' letters)
