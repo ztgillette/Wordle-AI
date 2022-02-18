@@ -1,1 +1,9 @@
-4.0
+
+
+RESULTS:
+
+Simulations: 1
+Win Rate (%): 100.0
+Avg Rounds/Solve: 4.0
+
+Runtime (s): 4.25478720664978

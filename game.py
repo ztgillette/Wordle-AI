@@ -24,6 +24,8 @@ words = []
 wipe = False
 rounds = 0
 guess = ""
+win = False
+lose = False
 
 #################################
 ### Display-related Functions ###
@@ -368,6 +370,8 @@ def loop(simulate):
     global words
     words = [['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*']]
     colors = [['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b'],['b','b','b','b','b']]
+    global win
+    global lose
     win = False
     lose = False
     global letterlist
@@ -483,6 +487,10 @@ def main():
 def getRounds():
     global rounds
     return rounds
+
+def getWin():
+    if(win == True):
+        return True
 
 def typeAnswer(answer):
 
