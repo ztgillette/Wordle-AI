@@ -20,6 +20,7 @@ for i in range(26):
     letterlist.append('b')
 
 words = []
+wipe = False
 
 #################################
 ### Display-related Functions ###
@@ -47,14 +48,14 @@ SMALLEST_FONT = pygame.font.Font('freesansbold.ttf', 18)
 
 
 ### Drawing window ###
-def draw_window(input, row, arr, colors, lose, answer, win):
+def draw_window(input1, row, arr, colors, lose, answer, win):
     WINDOW.fill(BACKGROUND_COLOR)
     draw_screen(colors, row)
 
     drawInstructions()
     
     drawWords(arr) 
-    drawInput(input, row)
+    drawInput(input1, row)
 
     if(lose):
         drawAnswer(answer)
@@ -113,22 +114,22 @@ def draw_box(x, y, color):
     pygame.draw.rect(WINDOW, color, pygame.Rect(x+2, y+2, 56, 56))
 
 ### present input on screen ###
-def drawInput(input, row):
+def drawInput(input1, row):
 
     yadded = (row) * 66
 
-    length = len(input)
+    length = len(input1)
     fakeLength = length
     if length < 5:
         while(fakeLength < 5):
-            input += ' '
+            input1 += ' '
             fakeLength += 1
     
-    c1 = input[:1]
-    c2 = input[1:2]
-    c3 = input[2:3]
-    c4 = input[3:4]
-    c5 = input[4:]
+    c1 = input1[:1]
+    c2 = input1[1:2]
+    c3 = input1[2:3]
+    c4 = input1[3:4]
+    c5 = input1[4:]
 
     c1display = TITLE_FONT.render(c1, True, WHITE)
     WINDOW.blit(c1display, (104, 183 + yadded))
@@ -267,13 +268,13 @@ def pickWord():
     return word
 
 ### Check if input word is a valid word
-def checkWord(input, wordlist):
-    if(input in wordlist):
+def checkWord(input1, wordlist):
+    if(input1 in wordlist):
         return True
     return False
     
 
-def showResults(input, answer, colors, row):
+def showResults(input1, answer, colors, row):
     
     answer = answer.upper()
 
@@ -281,29 +282,29 @@ def showResults(input, answer, colors, row):
     for c in range(5):
         for a in range(5):
         
-            if input[c:c+1] == answer[a:a+1]:
+            if input1[c:c+1] == answer[a:a+1]:
                 
                 if c==a:
                     #green
                     colors[row][a] = 'g'
                     answer = answer[:c] + '&' + answer[c+1:]
 
-                    #store input[c:c+1] as a green letter
-                    storeResults(input[c:c+1], 'g')
+                    #store input1[c:c+1] as a green letter
+                    storeResults(input1[c:c+1], 'g')
 
     #Next, get all the yellow
     for c in range(5):
         for a in range(5):
         
-            if input[c:c+1] == answer[a:a+1]:
+            if input1[c:c+1] == answer[a:a+1]:
                 
                 #yellow
                 if(colors[row][c] != 'g'):
                     colors[row][c] = 'y'
                     answer = answer[:a] + '%' + answer[a+1:]
 
-                    #store input[c:c+1] as a yellow letter
-                    storeResults(input[c:c+1], 'y')
+                    #store input1[c:c+1] as a yellow letter
+                    storeResults(input1[c:c+1], 'y')
 
     #Make everything else gray
     for i in range(5):
@@ -311,8 +312,8 @@ def showResults(input, answer, colors, row):
             colors[row][i] = 'w'
             answer = answer[:i] + '@' + answer[i+1:]
 
-            #store input[c:c+1] as a gray letter
-            storeResults(input[i:i+1], 'w')
+            #store input1[c:c+1] as a gray letter
+            storeResults(input1[i:i+1], 'w')
     
     return colors
 
@@ -357,7 +358,7 @@ def loop():
     clock = pygame.time.Clock()
 
     ### Variables ###
-    input = ""
+    input1 = ""
     row = 0
     global words
     words = [['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*'],['*','*','*','*','*']]
@@ -368,7 +369,13 @@ def loop():
     letterlist = []
     for i in range(26):
         letterlist.append('b')
+    global wipe
+
     
+    print("ROUND: ", row)
+    print("AI's Pick: ", chooseWord(letterlist, words, colors, row, wipe), '\n')
+    
+    wipe = False
     while run:
         clock.tick(FPS)
 
@@ -382,54 +389,58 @@ def loop():
         if keys[pygame.K_TAB]:
             #print("New game")
             run = False
+            wipe = True
             
-        ### Key input ###
+        ### Key input1 ###
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
 
-            ### Text input ###
+            ### Text input1 ###
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
-                    input = input[:-1]
+                    input1 = input1[:-1]
                 elif event.key == pygame.K_RETURN:
-                    if (len(input) == 5 or row == 5) and checkWord(input, wordlist):
+                    if (len(input1) == 5 or row == 5) and checkWord(input1, wordlist):
                         ### "lock in" input as final answer ###
                         
                         if(row <= 5):
                             ### Store input ###
-                            words[row][0] = input[:1]
-                            words[row][1] = input[1:2]
-                            words[row][2] = input[2:3]
-                            words[row][3] = input[3:4]
-                            words[row][4] = input[4:]
+                            words[row][0] = input1[:1]
+                            words[row][1] = input1[1:2]
+                            words[row][2] = input1[2:3]
+                            words[row][3] = input1[3:4]
+                            words[row][4] = input1[4:]
 
-                            colors = showResults(input, answer, colors, row)
+                            colors = showResults(input1, answer, colors, row)
 
-                            #game gives advice here
-                            choice = chooseWord(letterlist, words, colors, row)
-                            print("ROUND: ", row+1)
-                            print("AI's Pick: ", choice)
+                            
 
 
                             win = checkWin(row, colors)
                             if(win):             
                                 row = 1000
+                            else:
+                                #game gives advice here
+                                choice = chooseWord(letterlist, words, colors, row, wipe)
+                                
+                                print("ROUND: ", row+1)
+                                print("AI's Pick: ", choice, '\n')
                             
-                            input = ""
+                            input1 = ""
                             row += 1
 
                             if(row == 6 and win == False):
                                 lose = True
                                
                 else:
-                    if len(input) < 5 and row<6:
+                    if len(input1) < 5 and row<6:
                         l = event.unicode
                         if l.isalpha():
-                            input += l.upper()
+                            input1 += l.upper()
         
         ### Draw display ###
-        draw_window(input, row, words, colors, lose, answer, win)
+        draw_window(input1, row, words, colors, lose, answer, win)
 
 def main():
     while True:

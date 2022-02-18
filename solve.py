@@ -2,21 +2,19 @@ from operator import pos
 from turtle import color
 from game import *
 
-answerlist = []
-with open('wordle-answers-alphabetical.txt') as file:
-    answerlist = file.readlines()
+def setAnswerList():
+    with open('wordle-answers-alphabetical.txt') as file:
+        answerlist = file.readlines()
 
-for i in range(len(answerlist)):
-    answerlist[i] = answerlist[i][:5]
-    answerlist[i] = answerlist[i].upper()
+    for i in range(len(answerlist)):
+        answerlist[i] = answerlist[i][:5]
+        answerlist[i] = answerlist[i].upper()
 
-count = len(answerlist)
+    return answerlist
 
 #this function takes results from game input and returns
 #all the possible words that could remain
 def possibleWords(letterlist, words, colors, row):
-    global answerlist
-    global count
 
     #INPUTS: these will be used to narrow down letter list
     #to a list of remaining words that qualify:
@@ -29,9 +27,7 @@ def possibleWords(letterlist, words, colors, row):
     #1. If a word contains gray letters
     #2. If a word contains a yellow letter in the same spot it was entered
     
-    remainingWords = answerlist
-
-    
+    remainingWords = setAnswerList()
         
     #identify yellow letters and their locations
     #1 means yellow present, 0 means absent
@@ -45,7 +41,7 @@ def possibleWords(letterlist, words, colors, row):
                 letter = [words[i][j], j]
                 yellowLetters.append(letter)
 
-    print(yellowLetters)
+    #print(yellowLetters)
 
     #remove yellow letters in wrong spot
     c = False
@@ -60,9 +56,9 @@ def possibleWords(letterlist, words, colors, row):
                     if(c == False):
                         if word[i:i+1] == letter[0] and i == letter[1] and word.count(letter[0]) == 1 and word != '*':
                             remainingWords[j] = '*'
-                            print("Removed2: ", word, " because: ", letter)
-                            count -= 1
+                            #print("Removed2: ", word, " because: ", letter)
                             c = True
+                            
                     else:
                         break
             else:
@@ -75,9 +71,10 @@ def possibleWords(letterlist, words, colors, row):
         word = remainingWords[j]
         for letter in yellowLetters:
             if word.count(letter[0]) == 0 and word != '*':
-                print("Removed4: ", word, " becayse: ", letter)
+                #print("Removed4: ", word, " becayse: ", letter)
                 remainingWords[j] = '*'
-                count -= 1
+             
+                
 
     #remove words where green letter is not present in correct place
     greenLetters = []
@@ -95,15 +92,16 @@ def possibleWords(letterlist, words, colors, row):
             for i in range(5):
                 if word[i:i+1] != letter[0] and i == letter[1] and word != '*':
                     remainingWords[j] = '*'
-                    print("Removed3: ", word, " because: ", letter)
-                    count -= 1
+                    #print("Removed3: ", word, " because: ", letter)
+                    
+                    
 
     #1 identify gray letters and remove words that have them
     grayLetters = []
     for i in range(26):
         if letterlist[i] == 'w':
             grayLetters.append(chr(i+65))
-    print(grayLetters)
+    #print(grayLetters)
 
     #remove the gray letters
     c = False
@@ -127,8 +125,8 @@ def possibleWords(letterlist, words, colors, row):
 
                             if cancel == False:
                                 remainingWords[j] = '*'
-                                print("Removed: ", word, " because: ", letter)
-                                count -= 1
+                                #print("Removed: ", word, " because: ", letter)
+                             
                                 c = True
                     else:
                         break
@@ -144,10 +142,13 @@ def possibleWords(letterlist, words, colors, row):
 #for the next round. This will be done by assigning a score value 
 #to words based on the frequency of the letters within the word
 #and picking the word with the highest score
-def chooseWord(letterlist, words, colors, row):
+def chooseWord(letterlist, words, colors, row, wipe):
 
     remainingWords = possibleWords(letterlist, words, colors, row)
-    
+
+    if wipe:
+        remainingWords = setAnswerList()
+
     #as determined from countLetters.py, the most common letters are as follows:
     #['e', 'a', 'r', 'o', 't', 'l', 'i', 's', 'n', 'c', 'u', 'y', 
     # 'd', 'h', 'p', 'm', 'g', 'b', 'f', 'k', 'w', 'v', 'z', 'x', 
@@ -179,10 +180,10 @@ def chooseWord(letterlist, words, colors, row):
             if(score > bestScore):
                 bestScore = score
                 bestIndex = j
-    print("Words left: ", count)
+    #print("Words left: ", count)
 
-    if(count <= 50):
-        printarr(remainingWords)
+    #if(count <= 50):
+        #printarr(remainingWords)
     
     return remainingWords[bestIndex]
     
