@@ -10,6 +10,9 @@ from english_words import english_words_lower_alpha_set
 import random
 from solve import *
 import time
+import pyautogui
+import os
+os.system('cls' if os.name == 'nt' else 'clear')
 
 pygame.font.init()
 
@@ -348,8 +351,9 @@ def returnResults():
 ######################
 ### Main game loop ###
 ######################
-
-def loop():
+print("Loading...")
+time.sleep(5)
+def loop(simulate):
 
     ### Set up the game
     wordlist = generateWordList()
@@ -384,6 +388,9 @@ def loop():
     print("ROUND: ", row)
     guess = chooseWord(letterlist, words, colors, row, wipe)
     print("AI's Pick: ", guess, '\n')
+
+    if simulate:
+        typeAnswer(guess)
     
     wipe = False
     while run:
@@ -401,6 +408,8 @@ def loop():
             run = False
             wipe = True
             time.sleep(0.5)
+        
+        
             
         ### Key input1 ###
         for event in pygame.event.get():
@@ -411,6 +420,11 @@ def loop():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     input1 = input1[:-1]
+                elif event.key == pygame.K_TAB:
+                    run = False
+                    wipe = True
+                    time.sleep(0.5)
+
                 elif event.key == pygame.K_RETURN:
                     if (len(input1) == 5 or row == 5) and checkWord(input1, wordlist):
                         ### "lock in" input as final answer ###
@@ -425,17 +439,15 @@ def loop():
 
                             colors = showResults(input1, answer, colors, row)
 
-                            
-
-
                             win = checkWin(row, colors)
                             if(win):
                                 print(row+1, "rounds")   
                                 rounds = row+1   
                                 
                                 row = 1000
-    
-                                
+                                if simulate:
+                                    pyautogui.press('tab')
+
                             else:
                                 #game gives advice here
                                 choice = chooseWord(letterlist, words, colors, row, wipe)
@@ -444,6 +456,8 @@ def loop():
                                 print("AI's Pick: ", choice, '\n')
 
                                 guess = choice
+                                if simulate:
+                                    typeAnswer(guess)
 
                             
                             input1 = ""
@@ -452,7 +466,8 @@ def loop():
                             if(row == 6 and win == False):
                                 lose = True
                                 rounds = 6
-                                print("6 rounds")
+                                if simulate:
+                                    pyautogui.press('tab')
                                 
                              
                                
@@ -467,11 +482,19 @@ def loop():
 
 def main():
     while True:
-        loop()
+        loop(False)
 
 def getRounds():
     global rounds
     return rounds
+
+def typeAnswer(answer):
+
+    for i in range(5):
+        l = answer[i:i+1]
+        pyautogui.typewrite(l)
+
+    pyautogui.press('enter')
 
 if __name__ == "__main__":
     main()

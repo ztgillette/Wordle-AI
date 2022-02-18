@@ -3,6 +3,8 @@ import game
 ### this file will simulate games to determine the AI's average 
 # score (how many rounds it takes)
 
+### CHANGE THIS VALUE TO CHANGE NUMBER OF SIMULATIONS ###
+
 TESTS = 4
 ###
 
@@ -22,9 +24,11 @@ def calcAverage(rounds):
 # SIMULATION SECTION #
 ######################
 
+#sim loop
 for i in range(TESTS):
 
-    game.loop()
+    print("### SIMULATION", i, "###")
+    game.loop(True)
 
     ### Use pyautogui to get the guess, type it in, 
     # and once won, click tab to begin new game
@@ -33,3 +37,6 @@ for i in range(TESTS):
     calcAverage(rounds)
 
 print(average)
+
+with open('results.txt', 'w') as f:
+    f.write(str(average))
