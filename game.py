@@ -414,8 +414,6 @@ def loop():
 
                             if(row == 6 and win == False):
                                 lose = True
-
-                            print(words)
                                
                 else:
                     if len(input) < 5 and row<6:
