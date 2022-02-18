@@ -14,13 +14,21 @@ def calcAverage(rounds):
     global sumOfRounds
     global numOfRounds
     sumOfRounds += rounds
-    numOfRounds += 0.5
+    numOfRounds += 1
     global average
     average = sumOfRounds / numOfRounds
-    
-for i in range(TESTS*2):
+
+######################
+# SIMULATION SECTION #
+######################
+
+for i in range(TESTS):
 
     game.loop()
+
+    ### Use pyautogui to get the guess, type it in, 
+    # and once won, click tab to begin new game
+
     rounds = game.getRounds()
     calcAverage(rounds)
 

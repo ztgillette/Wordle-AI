@@ -4,11 +4,12 @@
 ### Import statements ###
 from curses import termattrs
 from dataclasses import asdict
+from mimetypes import guess_all_extensions
 import pygame
 from english_words import english_words_lower_alpha_set
 import random
 from solve import *
-#from sim import *
+import time
 
 pygame.font.init()
 
@@ -23,6 +24,7 @@ for i in range(26):
 words = []
 wipe = False
 rounds = 0
+guess = ""
 
 #################################
 ### Display-related Functions ###
@@ -354,6 +356,7 @@ def loop():
     answer = pickWord()
     
     
+    
     run = True
 
     ### Setting Clock ###
@@ -374,10 +377,13 @@ def loop():
     global wipe
     global rounds
     rounds = 0
+    global guess
+    guess = ""
 
     
     print("ROUND: ", row)
-    print("AI's Pick: ", chooseWord(letterlist, words, colors, row, wipe), '\n')
+    guess = chooseWord(letterlist, words, colors, row, wipe)
+    print("AI's Pick: ", guess, '\n')
     
     wipe = False
     while run:
@@ -394,6 +400,7 @@ def loop():
             #print("New game")
             run = False
             wipe = True
+            time.sleep(0.5)
             
         ### Key input1 ###
         for event in pygame.event.get():
@@ -427,6 +434,7 @@ def loop():
                                 rounds = row+1   
                                 
                                 row = 1000
+    
                                 
                             else:
                                 #game gives advice here
@@ -434,6 +442,9 @@ def loop():
                                 
                                 print("ROUND: ", row+1)
                                 print("AI's Pick: ", choice, '\n')
+
+                                guess = choice
+
                             
                             input1 = ""
                             row += 1
@@ -442,6 +453,7 @@ def loop():
                                 lose = True
                                 rounds = 6
                                 print("6 rounds")
+                                
                              
                                
                 else:
