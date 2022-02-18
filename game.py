@@ -2,11 +2,7 @@
 # 4. once game is ready to go, figure out the AI part
 
 ### Import statements ###
-from curses import termattrs
-from dataclasses import asdict
-from mimetypes import guess_all_extensions
 import pygame
-from english_words import english_words_lower_alpha_set
 import random
 from solve import *
 import time
