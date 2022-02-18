@@ -8,6 +8,7 @@ import pygame
 from english_words import english_words_lower_alpha_set
 import random
 from solve import *
+#from sim import *
 
 pygame.font.init()
 
@@ -21,6 +22,7 @@ for i in range(26):
 
 words = []
 wipe = False
+rounds = 0
 
 #################################
 ### Display-related Functions ###
@@ -370,6 +372,8 @@ def loop():
     for i in range(26):
         letterlist.append('b')
     global wipe
+    global rounds
+    rounds = 0
 
     
     print("ROUND: ", row)
@@ -418,8 +422,12 @@ def loop():
 
 
                             win = checkWin(row, colors)
-                            if(win):             
+                            if(win):
+                                print(row+1, "rounds")   
+                                rounds = row+1   
+                                
                                 row = 1000
+                                
                             else:
                                 #game gives advice here
                                 choice = chooseWord(letterlist, words, colors, row, wipe)
@@ -432,6 +440,9 @@ def loop():
 
                             if(row == 6 and win == False):
                                 lose = True
+                                rounds = 6
+                                print("6 rounds")
+                             
                                
                 else:
                     if len(input1) < 5 and row<6:
@@ -445,6 +456,10 @@ def loop():
 def main():
     while True:
         loop()
+
+def getRounds():
+    global rounds
+    return rounds
 
 if __name__ == "__main__":
     main()
