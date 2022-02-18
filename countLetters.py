@@ -16,8 +16,6 @@ for i in range(len(answerlist)):
         index = ord(letter)-97
         freq[index] += 1
 
-print(freq)
-
 #returning the letters in order
 orderedList = []
 max = freq[0]

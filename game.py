@@ -405,6 +405,12 @@ def loop():
 
                             colors = showResults(input, answer, colors, row)
 
+                            #game gives advice here
+                            choice = chooseWord(letterlist, words, colors)
+                            print("ROUND: ", row)
+                            print("AI's Pick: ", choice)
+
+
                             win = checkWin(row, colors)
                             if(win):             
                                 row = 1000
