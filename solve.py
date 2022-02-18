@@ -14,7 +14,7 @@ count = len(answerlist)
 
 #this function takes results from game input and returns
 #all the possible words that could remain
-def possibleWords(letterlist, words, colors):
+def possibleWords(letterlist, words, colors, row):
     global answerlist
     global count
 
@@ -31,36 +31,7 @@ def possibleWords(letterlist, words, colors):
     
     remainingWords = answerlist
 
-    #1 identify gray letters and remove words that have them
-    grayLetters = []
-    for i in range(26):
-        if letterlist[i] == 'w':
-            grayLetters.append(chr(i+65))
-    print(grayLetters)
-
-    #remove the gray letters
-    c = False
-    size = len(remainingWords)
-    for j in range(size):
-
-        word = remainingWords[j]
-
-        for letter in grayLetters:
-            if c == False:
-                for i in range(5):
-                    if c == False:
-                        if word[i:i+1] == letter and word.count(letter) == 1:
-                            remainingWords[j] = '*'
-                            print("Removed: ", word, " because: ", letter)
-                            count -= 1
-                            c = True
-                    else:
-                        break
-            else:
-                break
     
-        c = False
-            
         
     #identify yellow letters and their locations
     #1 means yellow present, 0 means absent
@@ -81,11 +52,13 @@ def possibleWords(letterlist, words, colors):
     size = len(remainingWords)
     for j in range(size):
 
+        word = remainingWords[j]
+
         for letter in yellowLetters:
             if(c == False):
                 for i in range(5):
                     if(c == False):
-                        if word[i:i+1] == letter[0] and i == letter[1] and word.count(letter) == 1:
+                        if word[i:i+1] == letter[0] and i == letter[1] and word.count(letter[0]) == 1 and word != '*':
                             remainingWords[j] = '*'
                             print("Removed2: ", word, " because: ", letter)
                             count -= 1
@@ -125,10 +98,44 @@ def possibleWords(letterlist, words, colors):
                     print("Removed3: ", word, " because: ", letter)
                     count -= 1
 
+    #1 identify gray letters and remove words that have them
+    grayLetters = []
+    for i in range(26):
+        if letterlist[i] == 'w':
+            grayLetters.append(chr(i+65))
+    print(grayLetters)
 
- 
-                    
+    #remove the gray letters
+    c = False
+    size = len(remainingWords)
+    for j in range(size):
 
+        word = remainingWords[j]
+
+        for letter in grayLetters:
+            if c == False:
+                for i in range(5):
+                    if c == False:
+                        #if not multiple of same letter in words row where one of the letters is yellow or green
+                        if word[i:i+1] == letter and word != '*':
+
+                            #find all of the letter of question in the input
+                            cancel = False
+                            for a in range(5):
+                                if(colors[row][a] == 'y' or colors[row][a] == 'g') and words[row][a] == letter:
+                                    cancel = True
+
+                            if cancel == False:
+                                remainingWords[j] = '*'
+                                print("Removed: ", word, " because: ", letter)
+                                count -= 1
+                                c = True
+                    else:
+                        break
+            else:
+                break
+    
+        c = False
 
     return remainingWords
 
@@ -137,9 +144,9 @@ def possibleWords(letterlist, words, colors):
 #for the next round. This will be done by assigning a score value 
 #to words based on the frequency of the letters within the word
 #and picking the word with the highest score
-def chooseWord(letterlist, words, colors):
+def chooseWord(letterlist, words, colors, row):
 
-    remainingWords = possibleWords(letterlist, words, colors)
+    remainingWords = possibleWords(letterlist, words, colors, row)
     
     #as determined from countLetters.py, the most common letters are as follows:
     #['e', 'a', 'r', 'o', 't', 'l', 'i', 's', 'n', 'c', 'u', 'y', 
@@ -161,13 +168,26 @@ def chooseWord(letterlist, words, colors):
             for i in range(5):
                 letter = word[i:i+1]
                 index = ord(letter) - 97
-                score += scoreArr[index]
+
+                #getting the same letter again isn't as helpful
+                #so I'm going to only give half points for that
+                if word.count(letter) == 1:
+                    score += scoreArr[index]
+                else:
+                    score += int((scoreArr[index])/2)
             
             if(score > bestScore):
                 bestScore = score
                 bestIndex = j
     print("Words left: ", count)
+
+    if(count <= 50):
+        printarr(remainingWords)
     
     return remainingWords[bestIndex]
     
 
+def printarr(arr):
+    for i in range(len(arr)):
+        if arr[i] != '*':
+            print(arr[i])

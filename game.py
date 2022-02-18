@@ -350,6 +350,7 @@ def loop():
     wordlist = generateWordList()
     answer = pickWord()
     
+    
     run = True
 
     ### Setting Clock ###
@@ -406,8 +407,8 @@ def loop():
                             colors = showResults(input, answer, colors, row)
 
                             #game gives advice here
-                            choice = chooseWord(letterlist, words, colors)
-                            print("ROUND: ", row)
+                            choice = chooseWord(letterlist, words, colors, row)
+                            print("ROUND: ", row+1)
                             print("AI's Pick: ", choice)
 
 
